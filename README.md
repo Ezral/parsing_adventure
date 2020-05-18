@@ -1,4 +1,4 @@
-# parsing_adventure
+# webscraping_adventure
 
 This is an project that I started with the intention to learn more about parsing and web scraping using Python.
 
