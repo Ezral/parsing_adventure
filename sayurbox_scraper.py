@@ -1,11 +1,13 @@
 # import libraries
-import urllib.request
-from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import time
 import pandas as pd
 
+# Starting time
+start = time.time()
+
+# Headless option
 options = Options()
 options.headless = True
 
@@ -29,8 +31,12 @@ urlpage = [
 'https://www.sayurbox.com/products/c/Olahan%20Susu%20dan%20Telur'
 ]
 
+# empty dictionary to store all the dataframes
+sb_df = {}
+
+# for loop to scrape data and create dataframe 
 for n in range(0,len(urlpage)):
-    print(urlpage[n])
+    print("Start scraping from {}".format(urlpage[n]))
 
     # get web page
     driver.get(urlpage[n])
@@ -77,30 +83,16 @@ for n in range(0,len(urlpage)):
 
     # create data file
     df['link'] = 'https://www.sayurbox.com/p/' + df['product'].str.replace(' ','%20').str.replace('(','').str.replace(')','')
-    print(df)
 
     # write to csv
-    df.to_csv('sayurbox_{}.csv'.format(n))
-
-    # print csv save completion
-    print('sayurbox_{}.csv has been saved.\n'.format(n))
+    sb_df[n] = df
+    
 
 # close webdriver after loop is completed
 driver.quit()
 
 # reading all the datasets into dataframes
-sayurbox_0 = pd.read_csv('sayurbox_0.csv',index_col=0)
-sayurbox_1 = pd.read_csv('sayurbox_1.csv',index_col=0)
-sayurbox_2 = pd.read_csv('sayurbox_2.csv',index_col=0)
-sayurbox_3 = pd.read_csv('sayurbox_3.csv',index_col=0)
-sayurbox_4 = pd.read_csv('sayurbox_4.csv',index_col=0)
-sayurbox_5 = pd.read_csv('sayurbox_5.csv',index_col=0)
-sayurbox_6 = pd.read_csv('sayurbox_6.csv',index_col=0)
-sayurbox_7 = pd.read_csv('sayurbox_7.csv',index_col=0)
-sayurbox_8 = pd.read_csv('sayurbox_8.csv',index_col=0)
-sayurbox_9 = pd.read_csv('sayurbox_8.csv',index_col=0)
-
-sb = [sayurbox_0,sayurbox_1,sayurbox_2,sayurbox_3,sayurbox_4,sayurbox_5,sayurbox_6,sayurbox_7,sayurbox_8,sayurbox_9]
+sb = [sb_df[0],sb_df[1],sb_df[2],sb_df[3],sb_df[4],sb_df[5],sb_df[6],sb_df[7],sb_df[8],sb_df[9]]
 
 # adding category column to all dataframe
 for n in range(0,len(category)):
@@ -114,3 +106,7 @@ sayurbox_merged['price'] = sayurbox_merged['price'].str.replace('Rp. ','').str.r
 
 # write to csv
 sayurbox_merged.to_csv('sayurbox_merged.csv')
+
+# Printing elapsed time
+proc_time = time.time() - start
+print("Scraping completed in: {} sec.".format(str(proc_time)))
